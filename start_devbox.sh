@@ -168,7 +168,12 @@ main() {
       status_check
       ;;
     validate)
-      exec docker exec -it devbox validate-dev
+      exec docker exec -it \
+        -u dev \
+        -e HOME=/home/dev \
+        -e USER=dev \
+        -e SHELL=/bin/zsh \
+        devbox validate-dev
       ;;
     down)
       dc down

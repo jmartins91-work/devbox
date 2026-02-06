@@ -1,0 +1,29 @@
+name: Docker Health Check
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Start container
+        run: ./start_devbox.sh up ${{ github.workspace }}
+      
+      - name: Wait for readiness
+        run: sleep 5
+      
+      - name: Run validation
+        run: ./start_devbox.sh validate
+      
+      - name: Cleanup
+        if: always()
+        run: ./start_devbox.sh down

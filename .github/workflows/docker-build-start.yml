@@ -1,0 +1,26 @@
+name: Docker Build and Start
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-and-start:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Build and start container
+        run: ./start_devbox.sh up ${{ github.workspace }}
+      
+      - name: Check container status
+        run: ./start_devbox.sh status
+      
+      - name: Cleanup
+        if: always()
+        run: ./start_devbox.sh down
