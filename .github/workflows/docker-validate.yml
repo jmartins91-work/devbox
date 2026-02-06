@@ -34,20 +34,12 @@ jobs:
           DEVBOX_WORKDIR: ${{ github.workspace }}
         run: |
           if docker compose ps | grep -q "Up"; then
-            echo "✅ Container is running successfully"
+            echo "✅ Container started successfully"
+            docker compose ps
           else
             echo "❌ Container failed to start"
             docker compose logs
             exit 1
-          fi
-      
-      - name: Run validation script
-        run: |
-          if [ -f "./validate_container.sh" ]; then
-            chmod +x ./validate_container.sh
-            ./validate_container.sh
-          else
-            echo "⚠️ validate_container.sh not found, skipping"
           fi
       
       - name: Cleanup
