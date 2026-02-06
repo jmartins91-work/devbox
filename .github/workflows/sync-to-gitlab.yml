@@ -1,16 +1,1 @@
-name: Sync devbox to GitLab
 
-on:
-  push:
-    branches: ["main"]
-
-jobs:
-  trigger_gitlab:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Trigger GitLab pipeline
-        run: |
-          curl --request POST \
-            --form token="${{ secrets.GITLAB_TRIGGER_TOKEN }}" \
-            --form ref="main" \
-            "https://gitlab.aptiv.today/api/v4/projects/${{ secrets.GITLAB_PROJECT_ID }}/trigger/pipeline"
