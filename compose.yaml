@@ -1,0 +1,32 @@
+name: devbox
+
+services:
+  dev:
+    container_name: devbox
+    image: dev_container:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    environment:
+      USER_ID: "${UID:-1000}"
+      GROUP_ID: "${GID:-1000}"
+      TZ: "${TZ:-Etc/UTC}"
+
+    volumes:
+      - "${DEVBOX_WORKDIR:?Set DEVBOX_WORKDIR to the folder you want mounted}:/work"
+      - devpersist:/persist
+
+    tty: true
+    stdin_open: true
+
+    healthcheck:
+      test: ["CMD-SHELL", "test -f /persist/state/devbox_ready"]
+      interval: 5s
+      timeout: 2s
+      retries: 24
+      start_period: 5s
+
+volumes:
+  devpersist:
+    name: devpersist
