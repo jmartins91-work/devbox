@@ -93,6 +93,20 @@ exec_shell_as_dev() {
     devbox zsh -l
 }
 
+exec_validate() {
+  local docker_flags="-u dev"
+  # Only use -it if stdin is a terminal
+  if [[ -t 0 ]]; then
+    docker_flags="-it ${docker_flags}"
+  fi
+
+  exec docker exec ${docker_flags} \
+    -e HOME=/home/dev \
+    -e USER=dev \
+    -e SHELL=/bin/zsh \
+    devbox validate-dev
+}
+
 container_exists() { docker container inspect devbox >/dev/null 2>&1; }
 container_state()  { docker container inspect -f '{{.State.Status}}' devbox 2>/dev/null || true; }
 container_health() { docker container inspect -f '{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}' devbox 2>/dev/null || true; }
@@ -168,12 +182,7 @@ main() {
       status_check
       ;;
     validate)
-      exec docker exec -it \
-        -u dev \
-        -e HOME=/home/dev \
-        -e USER=dev \
-        -e SHELL=/bin/zsh \
-        devbox validate-dev
+      exec_validate
       ;;
     down)
       dc down
@@ -198,4 +207,3 @@ main() {
 }
 
 main "$@"
-``
