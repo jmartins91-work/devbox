@@ -19,12 +19,19 @@ jobs:
         run: docker build -t devbox:test .
       
       - name: Start Docker container
+        env:
+          DEVBOX_WORKDIR: ${{ github.workspace }}
+          UID: 1000
+          GID: 1000
+          TZ: UTC
         run: docker compose up -d
       
       - name: Wait for container to be ready
         run: sleep 5
       
       - name: Validate container is running
+        env:
+          DEVBOX_WORKDIR: ${{ github.workspace }}
         run: |
           if docker compose ps | grep -q "Up"; then
             echo "✅ Container is running successfully"
@@ -45,4 +52,6 @@ jobs:
       
       - name: Cleanup
         if: always()
+        env:
+          DEVBOX_WORKDIR: ${{ github.workspace }}
         run: docker compose down
