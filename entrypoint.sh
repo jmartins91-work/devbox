@@ -85,6 +85,21 @@ if [[ "${CURRENT_GID}" != "${GROUP_ID}" ]]; then
   usermod -g "${GROUP_ID}" "${USER_NAME}" || true
 fi
 
+if [[ -S /var/run/docker.sock ]]; then
+  DOCKER_GID="$(stat -c '%g' /var/run/docker.sock 2>/dev/null || echo '')"
+  if [[ -n "${DOCKER_GID}" ]]; then
+    if getent group docker >/dev/null 2>&1; then
+      EXISTING_GID="$(getent group docker | cut -d: -f3)"
+      if [[ "${EXISTING_GID}" != "${DOCKER_GID}" ]]; then
+        groupmod -g "${DOCKER_GID}" docker || true
+      fi
+    else
+      groupadd -g "${DOCKER_GID}" docker || true
+    fi
+    usermod -aG docker "${USER_NAME}" || true
+  fi
+fi
+
 fix_owner_if_needed "${PERSIST_DIR}/gnupg"
 fix_owner_if_needed "${PERSIST_DIR}/password-store"
 fix_owner_if_needed "${PERSIST_DIR}/state"

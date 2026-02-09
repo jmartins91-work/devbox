@@ -71,7 +71,7 @@ if [[ "$PID1" == *tini* ]]; then ok "PID 1 is tini ($PID1_ARGS)"; else warn "PID
 section "Tools present"
 
 TOOLS=(
-  git zsh tmux nvim rg fzf cargo pass gpg ssh curl
+  git zsh tmux nvim rg fzf cargo pass gpg ssh curl docker
   exa starship zoxide bat fd delta
 )
 
@@ -95,6 +95,7 @@ for cmd in \
   "rg --version | head -n 1" \
   "fzf --version | head -n 1" \
   "delta --version | head -n 1" \
+  "docker --version" \
 ; do
   echo "• $cmd"
   (eval "$cmd" 2>/dev/null) || true
@@ -107,6 +108,22 @@ section "Shell wiring (zsh/starship/zoxide)"
 if [[ -f "/home/dev/.zshrc" ]]; then ok ".zshrc exists"; else warn ".zshrc missing"; fi
 if command -v starship >/dev/null 2>&1; then ok "starship available"; fi
 if command -v zoxide >/dev/null 2>&1; then ok "zoxide available"; fi
+
+# -----------------------------
+# Docker socket checks
+# -----------------------------
+section "Docker socket wiring"
+
+if [[ -S /var/run/docker.sock ]]; then
+  ok "Docker socket exists at /var/run/docker.sock"
+  if docker ps >/dev/null 2>&1; then
+    ok "docker ps works (can communicate with host daemon)"
+  else
+    fail "docker ps failed (socket accessible but daemon unreachable)"
+  fi
+else
+  warn "Docker socket not mounted (this is OK if you don't need Docker)"
+fi
 
 # -----------------------------
 # Persistence checks

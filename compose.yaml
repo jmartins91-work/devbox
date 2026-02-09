@@ -16,6 +16,7 @@ services:
     volumes:
       - "${DEVBOX_WORKDIR:?Set DEVBOX_WORKDIR to the folder you want mounted}:/work"
       - devpersist:/persist
+      - /var/run/docker.sock:/var/run/docker.sock
 
     tty: true
     stdin_open: true

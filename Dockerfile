@@ -58,6 +58,13 @@ RUN curl -fsSL \
 RUN git config --system credential.helper /usr/local/bin/git-credential-manager && \
     git config --system credential.credentialStore gpg
 
+RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc && \
+    echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo $VERSION_CODENAME) stable" | \
+    tee /etc/apt/sources.list.d/docker.list > /dev/null && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends docker-ce-cli && \
+    rm -rf /var/lib/apt/lists/*
+
 RUN curl -fsSLO \
       "https://github.com/ogham/exa/releases/download/v${EXA_VERSION}/exa-linux-x86_64-v${EXA_VERSION}.zip" && \
     unzip -q "exa-linux-x86_64-v${EXA_VERSION}.zip" -d /tmp/exa && \
